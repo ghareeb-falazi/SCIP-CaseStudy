@@ -27,6 +27,8 @@ COPY /tomcat/server.xml /usr/local/tomcat/conf/
 COPY /tomcat/tomcat-users.xml /usr/local/tomcat/conf/
 # configure BAL
 COPY connectionProfiles-fab.json $HOME/root/.bal/connectionProfiles.json
+# configure fabric-network
+COPY /fab/connection-org1.json /fab/connection-org1.json
 EXPOSE 8080
 CMD chmod +x /usr/local/tomcat/bin/catalina.sh
 CMD ["catalina.sh", "run"]

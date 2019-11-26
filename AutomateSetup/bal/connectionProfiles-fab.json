@@ -3,6 +3,6 @@
     "@type": "fabric",
     "walletPath": "C:\\Users\\falazigb\\Documents\\GitHub\\fabric\\fabric-samples\\fabcar\\javascript\\wallet",
     "userName": "user1",
-    "connectionProfilePath": "C:\\Users\\falazigb\\Documents\\GitHub\\fabric\\fabric-samples\\first-network\\connection-org1.json"
+    "connectionProfilePath": "/fab/connection-org1.json"
   }
 }
