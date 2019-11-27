@@ -1,7 +1,7 @@
 {
   "fabric-0" : {
     "@type": "fabric",
-    "walletPath": "C:\\Users\\falazigb\\Documents\\GitHub\\fabric\\fabric-samples\\fabcar\\javascript\\wallet",
+    "walletPath": "/fab/wallet",
     "userName": "user1",
     "connectionProfilePath": "/fab/connection-org1.json"
   }
