@@ -2,7 +2,7 @@
   "fabric-0" : {
     "@type": "fabric",
     "walletPath": "/fab/wallet",
-    "userName": "user1",
+    "userName": "admin",
     "connectionProfilePath": "/fab/connection-org1.json"
   }
 }
