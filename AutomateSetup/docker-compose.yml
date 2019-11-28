@@ -155,7 +155,7 @@ services:
     command: /bin/bash
     volumes:
         - /var/run/:/host/var/run/
-        - ./fabric/chaincode/:/opt/gopath/src/github.com/chaincode
+        - ../SmartContracts/Fabric:/opt/gopath/src/github.com/chaincode
         - ./fabric/crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
         - ./fabric/scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
         - ./fabric/channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
