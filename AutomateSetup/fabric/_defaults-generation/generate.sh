@@ -223,3 +223,5 @@ CONSENSUS_TYPE="solo"
 #Create the network using docker compose
 generateCerts
 generateChannelArtifacts
+
+find ./crypto-config -type f -name "config.yaml" -exec sed -i 's/\\/\//g' {} \;

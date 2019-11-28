@@ -7,7 +7,8 @@ echo "\___ \    | |     / _ \   | |_) |   | |  "
 echo " ___) |   | |    / ___ \  |  _ <    | |  "
 echo "|____/    |_|   /_/   \_\ |_| \_\   |_|  "
 echo
-echo "Build your first network (BYFN) end-to-end test"
+echo "Create & join channel, register anchors,"
+echo "and init&invoke the fabcar chaincode    "
 echo
 CHANNEL_NAME="$1"
 DELAY="$2"
@@ -19,19 +20,19 @@ NO_CHAINCODE="$6"
 : ${DELAY:="3"}
 : ${LANGUAGE:="golang"}
 : ${TIMEOUT:="10"}
-: ${VERBOSE:="false"}
+: ${VERBOSE:="true"}
 : ${NO_CHAINCODE:="false"}
 LANGUAGE=`echo "$LANGUAGE" | tr [:upper:] [:lower:]`
 COUNTER=1
 MAX_RETRY=10
 
-CC_SRC_PATH="github.com/chaincode/chaincode_example02/go/"
-if [ "$LANGUAGE" = "node" ]; then
-	CC_SRC_PATH="/opt/gopath/src/github.com/chaincode/chaincode_example02/node/"
+CC_SRC_PATH="github.com/chaincode/fabcar/go/"
+if [ "$LANGUAGE" = "javascript" ]; then
+	CC_SRC_PATH="/opt/gopath/src/github.com/chaincode/fabcar/javascript/"
 fi
 
 if [ "$LANGUAGE" = "java" ]; then
-	CC_SRC_PATH="/opt/gopath/src/github.com/chaincode/chaincode_example02/java/"
+	CC_SRC_PATH="/opt/gopath/src/github.com/chaincode/fabcar/java/"
 fi
 
 echo "Channel name : "$CHANNEL_NAME
@@ -60,14 +61,10 @@ createChannel() {
 }
 
 joinChannel () {
-	for org in 1 2; do
-	    for peer in 0 1; do
-		joinChannelWithRetry $peer $org
-		echo "===================== peer${peer}.org${org} joined channel '$CHANNEL_NAME' ===================== "
-		sleep $DELAY
-		echo
-	    done
-	done
+joinChannelWithRetry 1 0
+echo "===================== peer${peer}.org${org} joined channel '$CHANNEL_NAME' ===================== "
+sleep $DELAY
+echo
 }
 
 ## Create channel
@@ -81,41 +78,45 @@ joinChannel
 ## Set the anchor peers for each org in the channel
 echo "Updating anchor peers for org1..."
 updateAnchorPeers 0 1
-echo "Updating anchor peers for org2..."
-updateAnchorPeers 0 2
 
 if [ "${NO_CHAINCODE}" != "true" ]; then
 
-	## Install chaincode on peer0.org1 and peer0.org2
 	echo "Installing chaincode on peer0.org1..."
-	installChaincode 0 1
-	echo "Install chaincode on peer0.org2..."
-	installChaincode 0 2
-
-	# Instantiate chaincode on peer0.org2
-	echo "Instantiating chaincode on peer0.org2..."
-	instantiateChaincode 0 2
-
-	# Query chaincode on peer0.org1
-	echo "Querying chaincode on peer0.org1..."
-	chaincodeQuery 0 1 100
-
-	# Invoke chaincode on peer0.org1 and peer0.org2
-	echo "Sending invoke transaction on peer0.org1 peer0.org2..."
-	chaincodeInvoke 0 1 0 2
+	peer chaincode install -n fabcar -v 1.0 -p github.com/chaincode/fabcar/go -l golang
 	
-	## Install chaincode on peer1.org2
-	echo "Installing chaincode on peer1.org2..."
-	installChaincode 1 2
-
-	# Query on chaincode on peer1.org2, check if the result is 90
-	echo "Querying chaincode on peer1.org2..."
-	chaincodeQuery 1 2 90
+	echo "Instantiating chaincode on peer0.org1..."
+	#instantiateChaincode 0 1
+	peer chaincode instantiate \
+    -o orderer.example.com:7050 \
+    -C mychannel \
+    -n fabcar \
+    -l golang \
+    -v 1.0 \
+    -c '{"Args":[]}' \
+    -P "AND('Org1MSP.member')" \
+    --tls \
+    --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem \
+    --peerAddresses peer0.org1.example.com:7051 \
+    --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+	
+	sleep 10
+	
+	echo "Sending invoke transaction on peer0.org1..."
+	peer chaincode invoke \
+    -o orderer.example.com:7050 \
+    -C mychannel \
+    -n fabcar \
+    -c '{"function":"initLedger","Args":[]}' \
+    --waitForEvent \
+    --tls \
+    --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem \
+    --peerAddresses peer0.org1.example.com:7051 \
+    --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 	
 fi
 
 echo
-echo "========= All GOOD, BYFN execution completed =========== "
+echo "========= All GOOD, test run completed =========== "
 echo
 
 echo
