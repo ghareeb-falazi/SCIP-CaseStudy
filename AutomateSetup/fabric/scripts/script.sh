@@ -8,32 +8,21 @@ echo " ___) |   | |    / ___ \  |  _ <    | |  "
 echo "|____/    |_|   /_/   \_\ |_| \_\   |_|  "
 echo
 echo "Create & join channel, register anchors,"
-echo "and init&invoke the fabcar chaincode    "
+echo "and init&invoke the ems chaincode    "
 echo
 CHANNEL_NAME="$1"
 DELAY="$2"
-LANGUAGE="$3"
-TIMEOUT="$4"
-VERBOSE="$5"
-NO_CHAINCODE="$6"
+TIMEOUT="$3"
+VERBOSE="$4"
+NO_CHAINCODE="$5"
 : ${CHANNEL_NAME:="mychannel"}
 : ${DELAY:="3"}
-: ${LANGUAGE:="golang"}
 : ${TIMEOUT:="10"}
 : ${VERBOSE:="true"}
 : ${NO_CHAINCODE:="false"}
-LANGUAGE=`echo "$LANGUAGE" | tr [:upper:] [:lower:]`
 COUNTER=1
 MAX_RETRY=10
-
-CC_SRC_PATH="github.com/chaincode/fabcar/go/"
-if [ "$LANGUAGE" = "javascript" ]; then
-	CC_SRC_PATH="/opt/gopath/src/github.com/chaincode/fabcar/javascript/"
-fi
-
-if [ "$LANGUAGE" = "java" ]; then
-	CC_SRC_PATH="/opt/gopath/src/github.com/chaincode/fabcar/java/"
-fi
+CC_SRC_PATH="/opt/gopath/src/github.com/chaincode/ems/javascript/"
 
 echo "Channel name : "$CHANNEL_NAME
 
@@ -82,15 +71,15 @@ updateAnchorPeers 0 1
 if [ "${NO_CHAINCODE}" != "true" ]; then
 
 	echo "Installing chaincode on peer0.org1..."
-	peer chaincode install -n fabcar -v 1.0 -p github.com/chaincode/fabcar/go -l golang
+	peer chaincode install -n ems -v 1.0 -p $CC_SRC_PATH -l node
 	
 	echo "Instantiating chaincode on peer0.org1..."
 	#instantiateChaincode 0 1
 	peer chaincode instantiate \
     -o orderer.example.com:7050 \
     -C mychannel \
-    -n fabcar \
-    -l golang \
+    -n ems \
+    -l node \
     -v 1.0 \
     -c '{"Args":[]}' \
     -P "AND('Org1MSP.member')" \
@@ -105,7 +94,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
 	peer chaincode invoke \
     -o orderer.example.com:7050 \
     -C mychannel \
-    -n fabcar \
+    -n ems \
     -c '{"function":"initLedger","Args":[]}' \
     --waitForEvent \
     --tls \
