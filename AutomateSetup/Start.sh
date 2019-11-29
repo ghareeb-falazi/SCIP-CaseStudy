@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 #
 # Copyright Ghareeb Falazi Rights Reserved
 #
@@ -10,32 +10,29 @@
 
 set -e
 
-echo "---Copying Ethereum smart contract to working directory of ganache-cli docker images...---"
+printf "\n---Copying Ethereum smart contract to working directory of ganache-cli docker images...---\n"
+
 cp -r ../SmartContracts/Ethereum/Digest ./ganache-cli/Digest
 
-echo "---Bringing up docker images...---"
+printf "\n---Bringing up docker images...---\n"
+
 docker-compose up -d
 
 sleep 1
-echo "---Sleeping 10s to allow blockchains to complete booting...---"
+printf "\n---Sleeping 10s to allow blockchains to complete booting...---\n"
+
 sleep 9
 
-set -x
-echo "---Deploying the Digest smart contract on the ganache Ethereum simulator...---"
-docker exec \
-  ganache-with-truffle \
-  truffle migrate
+printf "\n---Deploying the Digest smart contract on the ganache Ethereum simulator...---\n"
 
-echo "---Installing the Energy Management System Fabric smart contract on peer0.org1.example.com---"
-docker exec \
-    cli \
-    scripts/script.sh
-    
-set -e
-echo -e "\n---Cleaning up...---\n"
+docker exec ganache-with-truffle truffle migrate
+
+printf "\n---Installing the Energy Management System Fabric smart contract on peer0.org1.example.com---\n"
+
+docker exec cli scripts/script.sh
+
+printf "\n---Cleaning up...---\n"
 
 rm -rf ./ganache-cli/Digest
 
-echo -e "\n-----------"
-echo -e "\n---DONE!---"
-echo -e "\n-----------"
+printf "\n---DONE!---\n"
