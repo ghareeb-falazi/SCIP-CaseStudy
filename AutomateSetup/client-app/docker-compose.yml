@@ -1,0 +1,30 @@
+version: "3.7"
+
+services:
+  case-study-frontend:
+    build:
+      context: ./frontend
+    restart: always
+    container_name: case-study-frontend
+    ports:
+      - "4200:80"
+    networks:
+      case-study:
+        ipv4_address: 172.16.238.10
+  case-study-backend:
+    build:
+      context: ./backend
+    restart: always
+    container_name: case-study-backend
+    ports:
+      - "8080:8080"
+    networks:
+      case-study:
+        ipv4_address: 172.16.238.11
+
+networks:
+  case-study:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.238.0/24"

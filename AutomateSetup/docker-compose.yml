@@ -5,6 +5,7 @@ volumes:
   peer0.org1.example.com:
 
 services:
+
   bal-ganache:
     build:
       context: ./bal
@@ -167,7 +168,33 @@ services:
       - ca0
     networks:
       case-study:
-        ipv4_address: 172.16.238.15  
+        ipv4_address: 172.16.238.15
+
+  case-study-backend:
+    build:
+      context: ./client-app/backend
+    restart: always
+    container_name: case-study-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - CLIENT_CALLBACK_URL=http://case-study-backend:8080
+      - EMS_BAL_URL=http://172.16.238.11:8080/blockchain-access-layer
+      - DIGEST_BAL_URL=http://172.16.238.10:8080/blockchain-access-layer
+    networks:
+      case-study:
+        ipv4_address: 172.16.238.17
+
+  case-study-frontend:
+    build:
+      context: ./client-app/frontend
+    restart: always
+    container_name: case-study-frontend
+    ports:
+      - "4200:80"
+    networks:
+      case-study:
+        ipv4_address: 172.16.238.18
 
 networks:
   case-study:

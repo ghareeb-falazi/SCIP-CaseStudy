@@ -2,6 +2,8 @@ package blockchains.iaas.uni.stuttgart.de.scipcasestudy.clientapplication.backen
 
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,4 +18,13 @@ public class GenericResponseMessage {
     private String errorMessage;
     private String transactionHash;
     private Double reachedDoC;
+
+    public String toString() {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            return "";
+        }
+    }
 }

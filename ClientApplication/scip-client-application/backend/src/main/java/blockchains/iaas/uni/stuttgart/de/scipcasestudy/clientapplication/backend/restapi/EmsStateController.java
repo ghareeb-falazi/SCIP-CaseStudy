@@ -25,9 +25,14 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 public class EmsStateController {
     private static Logger log = LoggerFactory.getLogger(EmsStateController.class);
-    private final String sclEms = "http://localhost:8090/webapi?blockchain=fabric&blockchain-id=fabric-0&address=mychannel/ems";
+    private final String sclEms;
     private final String TYPE_STRING = "{\"type\": \"string\"}";
-    private final String callbackUrl = "http://localhost:8080/";
+    private final String callbackUrl;
+
+    public EmsStateController() {
+        sclEms = UrlProvider.getInstance().getEmsBalUrl() + "/webapi?blockchain=fabric&blockchain-id=fabric-0&address=mychannel/ems";
+        callbackUrl = UrlProvider.getInstance().getCallbackUrl();
+    }
 
     @CrossOrigin
     @RequestMapping(value = "/query", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})

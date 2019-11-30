@@ -22,4 +22,7 @@
 
 #blackScreen {
   background-color: black;
+  color: white;
+  font-family: "Lucida Console", sans-serif;
+  width: 100%;
 }

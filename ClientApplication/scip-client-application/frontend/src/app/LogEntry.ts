@@ -1,6 +1,6 @@
 export class LogEntry {
-  message: string;
-  isError: boolean;
-  isoDateTime: string;
-  isDone: boolean;
+  message = '';
+  error = false;
+  isoDateTime = '';
+  done = false;
 }

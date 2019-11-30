@@ -6,7 +6,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MaterialModule } from './material.module';
 import { ScipClientService } from './ScipClientService';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import {  HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+
 
 @NgModule({
   declarations: [
@@ -17,6 +19,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
     BrowserAnimationsModule,
     MaterialModule,
     HttpClientModule,
+    FormsModule
   ],
   providers: [ScipClientService, HttpClientModule],
   bootstrap: [AppComponent]

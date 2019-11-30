@@ -8,6 +8,6 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 public class SubscribeResponse extends AbstractScipResponse {
-    private List<Parameter> parameters;
-    private String isoTimestamp;
+    protected List<Parameter> parameters;
+    protected String isoTimestamp;
 }

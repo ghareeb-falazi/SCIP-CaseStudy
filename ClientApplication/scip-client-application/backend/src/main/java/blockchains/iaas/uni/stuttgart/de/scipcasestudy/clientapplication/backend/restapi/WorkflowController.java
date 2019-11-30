@@ -23,59 +23,65 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class WorkflowController {
     private static Logger log = LoggerFactory.getLogger(WorkflowController.class);
-    private final String sclEms = "http://localhost:8090/webapi?blockchain=fabric&blockchain-id=fabric-0&address=mychannel/ems";
-    private final String sclDigest = "http://localhost:8090/webapi?blockchain=ethereum&blockchain-id=eth-0&address=0x75f17644EAEb3cC6511764a6F1138F14B3e33D0f";
-    private final String callbackUrl = "http://localhost:8080/";
+    private final String sclEms;
+    private final String sclDigest;
+    private final String callbackUrl;
     private final String TYPE_FABRIC_INT = "{\"type\": \"integer\"}";
     private final String TYPE_STRING = "{\"type\": \"string\"}";
-    private final String TYPE_ETHEREUM_BYTES = "{\n" +
-            "  \"type\": \"array\",\n" +
-            "  \"items\": {\n" +
-            "        \"type\": \"string\",\n" +
-            "        \"pattern\": \"^[a-fA-F0-9]{2}$\"\n" +
-            "   }\n" +
-            "}";
+    private final String TYPE_ETHEREUM_BYTES =
+            "{ \"type\": \"array\", " +
+                    "\"items\": {" +
+                    "\"type\": \"string\", " +
+                    "\"pattern\": \"^[a-fA-F0-9]{2}$\" " + "} " +
+                    "}";
+
+    public WorkflowController() {
+        sclEms = UrlProvider.getInstance().getEmsBalUrl() + "/webapi?blockchain=fabric&blockchain-id=fabric-0&address=mychannel/ems";
+        sclDigest = UrlProvider.getInstance().getDigestBalUrl() + "/webapi?blockchain=ethereum&blockchain-id=eth-0&address=0x75f17644EAEb3cC6511764a6F1138F14B3e33D0f";
+        callbackUrl = UrlProvider.getInstance().getCallbackUrl();
+    }
 
     @CrossOrigin
     @RequestMapping(value = "workflow", method = RequestMethod.POST)
     public String runWorkflow() {
         SubscriptionRequestMessage subsReq = this.getSubscribeRequestMessage();
+        LogsHandler.getInstance().clear();
         printMessage("======= Starting Workflow ========");
         printMessage("======= Subscribing... ========");
-        printMessage(" Sending the following request message to " + sclEms + " : " + subsReq.toString());
+        printMessage("Sending Subscribe request to " + sclEms + ":\n" + subsReq.toString());
         Disposable subscriptionDisposable = ScipClient.getInstance().subscribe(sclEms, subsReq)
                 .subscribe(
                         result -> {
-                            printMessage("Received a subscription callback with the payload: " + result.toString());
+                            printMessage("Received Subscribe callback from " + sclEms + ":\n" + result.toString());
                             InvocationRequestMessage buyInBulkRequestMessage = getBuyInBulkRequestMessage();
                             InvocationRequestMessage changeRetailPriceMessage = getChangeRetailPriceRequestMessage();
                             InvocationRequestMessage storeDigest1Message = getStoreDigestRequestMessage(buyInBulkRequestMessage);
                             InvocationRequestMessage storeDigest2Message = getStoreDigestRequestMessage(changeRetailPriceMessage);
                             printMessage("======= Buying in bulk... ========");
-                            printMessage(" Sending the following request message to " + sclEms + " : " + buyInBulkRequestMessage.toString());
+                            printMessage("Sending Invoke request to " + sclEms + ":\n" + buyInBulkRequestMessage.toString());
                             ScipClient.getInstance()
                                     .invoke(sclEms, buyInBulkRequestMessage)
                                     .thenCompose(invoke1Response -> {
-                                        printMessage("Received an invocation confirmation callback with payload: " + invoke1Response.toString());
+                                        printMessage("Received Invoke callback from " + sclEms + ":\n" + invoke1Response.toString());
                                         printMessage("======= Changing retail price... ========");
-                                        printMessage(" Sending the following request message to " + sclEms + " : " + changeRetailPriceMessage.toString());
+                                        printMessage("Sending Invoke request to " + sclEms + ":\n" + changeRetailPriceMessage.toString());
                                         return ScipClient.getInstance().invoke(sclEms, changeRetailPriceMessage);
                                     })
                                     .thenCompose(invoke2Response -> {
-                                        printMessage("Received an invocation confirmation callback with payload: " + invoke2Response.toString());
-                                        printMessage("======= Storing Digest 1... ========");
-                                        printMessage(" Sending the following request message to " + sclDigest + " : " + storeDigest1Message.toString());
+                                        printMessage("Received Invoke callback from " + sclEms + ":\n" + invoke2Response.toString());
+                                        printMessage("======= Storing digest of first Invoke request message... ========");
+                                        printMessage("Sending Invoke request to " + sclDigest + ":\n" + storeDigest1Message.toString());
                                         return ScipClient.getInstance().invoke(sclDigest, storeDigest1Message);
                                     })
                                     .thenCompose(invoke3Response -> {
-                                        printMessage("Received an invocation confirmation callback with payload: " + invoke3Response.toString());
-                                        printMessage("======= Storing Digest 2... ========");
-                                        printMessage(" Sending the following request message to " + sclDigest + " : " + storeDigest2Message.toString());
+                                        printMessage("Received Invoke callback from " + sclDigest + ":\n" + invoke3Response.toString());
+                                        printMessage("======= Storing digest of second Invoke request message... ========");
+                                        printMessage("Sending Invoke request to " + sclDigest + ":\n" + storeDigest2Message.toString());
                                         return ScipClient.getInstance().invoke(sclDigest, storeDigest2Message);
                                     })
                                     .thenAccept(finalResult -> {
-                                        printMessage("Received an invocation confirmation callback with payload: " + finalResult.toString());
-                                        printMessage("======= Done!!! ========");
+                                        printMessage("Received Invoke callback from " + sclDigest + ":\n" + finalResult.toString());
+                                        printMessage("======= Done !!! ========");
                                         LogsHandler.getInstance().recordDoneSignal();
                                     })
                                     .exceptionally(e -> {

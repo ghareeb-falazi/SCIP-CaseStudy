@@ -9,5 +9,5 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 public class InvokeResponse extends AbstractScipResponse {
-    private List<Parameter> parameters;
+    protected List<Parameter> parameters;
 }

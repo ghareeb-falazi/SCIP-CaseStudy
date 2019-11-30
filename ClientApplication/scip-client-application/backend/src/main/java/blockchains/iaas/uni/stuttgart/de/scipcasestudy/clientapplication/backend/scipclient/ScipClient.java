@@ -87,6 +87,7 @@ public class ScipClient {
         AsyncRequestCorrelationManager.getInstance().addEntry(request.getCorrelationIdentifier(), finalResponse -> {
             if (finalResponse.getErrorCode() != null) {
                 BalException exception = new BalException(finalResponse.getErrorMessage(), finalResponse.getErrorCode());
+                log.error(exception.getMessage());
                 observable.onError(exception);
             } else {
                 SubscribeResponse normalResponse = SubscribeResponse
@@ -99,6 +100,7 @@ public class ScipClient {
             }
         });
         this.getExecutorService().submit(() -> {
+            log.info("Calling performSubscribe");
             this.performSubscribe(scl, request);
         });
 
@@ -151,8 +153,10 @@ public class ScipClient {
 
             log.info("Received: {} from gateway at {}", response, scl);
         } catch (JsonRpcException e) {
+            log.error(e.getMessage());
             throw new BalException(e.getErrorMessage().getMessage(), e.getErrorMessage().getCode());
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new BalException("Unable to subscribe to events. Reason: " + e.getMessage(), ExceptionCode.InvocationError);
         }
     }
@@ -164,11 +168,14 @@ public class ScipClient {
             @NotNull
             @Override
             public String pass(@NotNull String request) throws IOException {
+                log.info("Inside pass() method");
                 // Used Apache HttpClient 4.3.1 as an example
                 HttpPost post = new HttpPost(scl);
                 post.setEntity(new StringEntity(request, Charsets.UTF_8));
                 post.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
+                log.info("Finished preparing HttpPost inside pass() method");
                 try (CloseableHttpResponse httpResponse = httpClient.execute(post)) {
+                    log.info("Received response inside pass method");
                     return EntityUtils.toString(httpResponse.getEntity(), Charsets.UTF_8);
                 }
             }

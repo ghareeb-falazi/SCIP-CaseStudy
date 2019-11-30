@@ -11,9 +11,9 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 public class SubscriptionRequestMessage extends AsyncScipRequestMessage {
-    private String functionIdentifier;
-    private String eventIdentifier;
-    private Double degreeOfConfidence;
-    private String filter;
-    private List<Parameter> parameters;
+    protected String functionIdentifier;
+    protected String eventIdentifier;
+    protected Double degreeOfConfidence;
+    protected String filter;
+    protected List<Parameter> parameters;
 }
