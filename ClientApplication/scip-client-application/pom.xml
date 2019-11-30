@@ -20,10 +20,5 @@
         <module>frontend</module>
     </modules>
 
-    <properties>
-        <java.version>1.8</java.version>
-        <jsonrpc.version>0.10</jsonrpc.version>
-    </properties>
-
 
 </project>

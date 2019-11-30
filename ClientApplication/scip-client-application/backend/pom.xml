@@ -45,6 +45,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>1.1.4</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.7</version>
@@ -71,11 +76,14 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+
     </dependencies>
 
     <properties>
         <java.version>1.8</java.version>
         <jsonrpc.version>0.10</jsonrpc.version>
+        <jackson.version>[2.9.9.2,)</jackson.version>
     </properties>
 
 

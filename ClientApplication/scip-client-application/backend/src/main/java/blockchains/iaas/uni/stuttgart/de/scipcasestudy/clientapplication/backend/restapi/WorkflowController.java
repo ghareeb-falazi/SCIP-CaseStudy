@@ -2,16 +2,20 @@ package blockchains.iaas.uni.stuttgart.de.scipcasestudy.clientapplication.backen
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import blockchains.iaas.uni.stuttgart.de.scipcasestudy.clientapplication.backend.model.request.InvocationRequestMessage;
 import blockchains.iaas.uni.stuttgart.de.scipcasestudy.clientapplication.backend.model.request.SubscriptionRequestMessage;
+import blockchains.iaas.uni.stuttgart.de.scipcasestudy.clientapplication.backend.model.response.LogEntry;
 import blockchains.iaas.uni.stuttgart.de.scipcasestudy.clientapplication.backend.model.response.Parameter;
 import blockchains.iaas.uni.stuttgart.de.scipcasestudy.clientapplication.backend.scipclient.ScipClient;
+import blockchains.iaas.uni.stuttgart.de.scipcasestudy.clientapplication.backend.utils.LogsHandler;
 import io.reactivex.disposables.Disposable;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +36,7 @@ public class WorkflowController {
             "   }\n" +
             "}";
 
+    @CrossOrigin
     @RequestMapping(value = "workflow", method = RequestMethod.POST)
     public String runWorkflow() {
         SubscriptionRequestMessage subsReq = this.getSubscribeRequestMessage();
@@ -71,6 +76,7 @@ public class WorkflowController {
                                     .thenAccept(finalResult -> {
                                         printMessage("Received an invocation confirmation callback with payload: " + finalResult.toString());
                                         printMessage("======= Done!!! ========");
+                                        LogsHandler.getInstance().recordDoneSignal();
                                     })
                                     .exceptionally(e -> {
                                         printError(e.getMessage());
@@ -80,6 +86,12 @@ public class WorkflowController {
                         error -> printError(error.getMessage()));
 
         return "Workflow started!";
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "workflow/query", method = RequestMethod.GET)
+    public List<LogEntry> queryState() {
+        return LogsHandler.getInstance().getEntries();
     }
 
     private SubscriptionRequestMessage getSubscribeRequestMessage() {
@@ -154,9 +166,11 @@ public class WorkflowController {
 
     private void printMessage(String message) {
         log.info(message);
+        LogsHandler.getInstance().addMessage(message);
     }
 
     private void printError(String message) {
         log.error(message);
+        LogsHandler.getInstance().addError(message);
     }
 }
