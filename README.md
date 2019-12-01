@@ -43,6 +43,7 @@ The sample client application is described by the following figure:
  
 ## Demo
 
+- __A Video of this demo is [availiable on Youtube](https://youtu.be/oiN_rKdk2EM)__
 - Open the browser to http://localhost:4200 to open the frontend of the client applicaiton.
 - Click on the button __Query State__. This should result in the state of the energy management system (EMS) shown on the left side of the page.
 - Start the workflow demonstrated in the fiture above by clicking on the __Start Workflow__ button.
