@@ -3,6 +3,8 @@ import { NgModule } from '@angular/core';
 import { MatButtonModule, MatCardModule, MatDividerModule } from '@angular/material';
 import { MatListModule } from '@angular/material/list';
 import { MatInputModule } from '@angular/material/input';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   imports: [
@@ -10,7 +12,9 @@ import { MatInputModule } from '@angular/material/input';
     MatCardModule,
     MatDividerModule,
     MatListModule,
-    MatInputModule
+    MatInputModule,
+    MatTabsModule,
+    MatSnackBarModule
   ],
   exports: [
     MatButtonModule,
@@ -18,6 +22,7 @@ import { MatInputModule } from '@angular/material/input';
     MatDividerModule,
     MatListModule,
     MatInputModule,
+    MatTabsModule
   ]
 })
 export class MaterialModule {

@@ -41,7 +41,7 @@ public class UrlProvider {
         String envVar = System.getenv("CLIENT_CALLBACK_URL");
 
         if (Strings.isNullOrEmpty(envVar)) {
-            return "http://localhost:8080";
+            return "http://localhost:9090";
         }
 
         return envVar;

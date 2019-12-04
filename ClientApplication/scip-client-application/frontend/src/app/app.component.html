@@ -1,57 +1,74 @@
 <h1>{{title}}</h1>
-<h2>Using this user interface, you can invoke the <a href="https://github.com/ghareeb-falazi/SCIP-CaseStudy">sample case
-  study</a> motivating workflow.</h2>
-<div>
-  <span>
-    You can query the latest state of the energy management system at any time by clicking on the <em>Query State</em> button.
-    Furthermore, in order to trigger the workflow, click on the <em>Start</em> button.
-  </span>
-</div>
-
-<div id="wrapper">
-  <div id="left">
-    <button [disabled]="querying" id="button" mat-raised-button (click)="query()">Query State</button>
-    <mat-card *ngIf="!querying">
-      <mat-list *ngIf="ems">
-        <mat-list-item>
-          Bulk Price (€): {{ems.powerPlantPrice}}
-        </mat-list-item>
-        <mat-divider></mat-divider>
-        <mat-list-item>
-          Retail Price (€): {{ems.powerProviderPrice}}
-        </mat-list-item>
-        <mat-divider></mat-divider>
-        <mat-list-item>
-          Bulk Energy Balance (MWh): {{ems.powerPlantAmount}}
-        </mat-list-item>
-        <mat-divider></mat-divider>
-        <mat-list-item>
-          Retail Energy Balance (MWh): {{ems.powerProviderAmount}}
-        </mat-list-item>
-        <mat-divider></mat-divider>
-        <mat-list-item>
-          Power Plant Balance (€): {{ems.powerPlantBalanceEur}}
-        </mat-list-item>
-        <mat-divider></mat-divider>
-        <mat-list-item>
-          Power Provider Balance (€): {{ems.powerProviderBalanceEur}}
-        </mat-list-item>
-      </mat-list>
-    </mat-card>
-    <mat-card *ngIf="querying">Query running..</mat-card>
-  </div>
-  <div id="right">
-    <button [disabled]="workflowRunning" id="button2" mat-raised-button (click)="startWorkflow()">Start Workflow
-    </button>
-    <span *ngIf="workflowRunning" style="margin-left: 5px;">Receiving logs from backend...</span>
-    <div>
-      <textarea  [(ngModel)]="logs" id="blackScreen"
-                 style="font-size: 9pt;"
-                 matInput
-                 cdkTextareaAutosize
-                 #autosize="cdkTextareaAutosize"
-                 cdkAutosizeMinRows="2" readonly>
-      </textarea>
+<h2>Using this user interface, you can invoke the <a href="https://github.com/ghareeb-falazi/SCIP-CaseStudy"> sample
+  case study</a> motivating workflow.</h2>
+<mat-tab-group style="padding: 0;">
+  <mat-tab label="Power Provider Controls">
+    <div style="margin-top: 10px;">
+      <span>
+        You can query the latest state of the energy management system at any time by clicking on the <em>Query State</em> button.
+        Furthermore, in order to trigger the workflow, click on the <em>Start</em> button.
+      </span>
     </div>
-  </div>
-</div>
+
+    <div class="wrapper">
+      <div id="left">
+        <button [disabled]="querying" id="button" mat-raised-button (click)="query()">Query State</button>
+        <mat-card *ngIf="!querying">
+          <mat-list *ngIf="ems">
+            <mat-list-item>
+              Bulk Price (€): {{ems.powerPlantPrice}}
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              Retail Price (€): {{ems.powerProviderPrice}}
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              Bulk Energy Balance (MWh): {{ems.powerPlantAmount}}
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              Retail Energy Balance (MWh): {{ems.powerProviderAmount}}
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              Power Plant Balance (€): {{ems.powerPlantBalanceEur}}
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+              Power Provider Balance (€): {{ems.powerProviderBalanceEur}}
+            </mat-list-item>
+          </mat-list>
+        </mat-card>
+        <mat-card *ngIf="querying">Query running..</mat-card>
+      </div>
+      <div id="right">
+        <button [disabled]="workflowRunning" id="button2" mat-raised-button (click)="startWorkflow()">Start Workflow
+        </button>
+        <span *ngIf="workflowRunning" style="margin-left: 5px;">Receiving logs from backend...</span>
+        <div>
+      <textarea [(ngModel)]="logs" id="blackScreen"
+                style="font-size: 9pt;"
+                matInput
+                cdkTextareaAutosize
+                #autosize="cdkTextareaAutosize"
+                cdkAutosizeMinRows="2" readonly>
+      </textarea>
+        </div>
+      </div>
+    </div>
+  </mat-tab>
+  <mat-tab label="Power Plant Controls">
+    <div style="margin-top: 10px; margin-bottom: 30px;">
+      <span>
+        Below, you can change the price of energy sold in bulk by this power plant.
+      </span>
+    </div>
+    <mat-form-field>
+      <section class="example-section">
+        <input matInput type="number" placeholder="Bulk Price" [(ngModel)]="bulkPrice">
+      </section>
+    </mat-form-field>
+    <button [disabled]="changingPrice" style="margin-left: 50px;" mat-raised-button (click)="changePrice()">Change Price</button>
+  </mat-tab>
+</mat-tab-group>

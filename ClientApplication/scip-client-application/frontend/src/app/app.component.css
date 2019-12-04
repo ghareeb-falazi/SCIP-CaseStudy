@@ -1,4 +1,4 @@
-#wrapper {
+.wrapper {
   display: flex;
   margin-top: 30px;
 }
@@ -25,4 +25,10 @@
   color: white;
   font-family: "Lucida Console", sans-serif;
   width: 100%;
+}
+
+.example-section {
+  display: flex;
+  align-content: center;
+  align-items: center;
 }

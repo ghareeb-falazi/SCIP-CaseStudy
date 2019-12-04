@@ -3,6 +3,7 @@ package blockchains.iaas.uni.stuttgart.de.scipcasestudy.clientapplication.backen
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import blockchains.iaas.uni.stuttgart.de.scipcasestudy.clientapplication.backend.model.request.InvocationRequestMessage;
 import blockchains.iaas.uni.stuttgart.de.scipcasestudy.clientapplication.backend.model.request.SubscriptionRequestMessage;
@@ -13,9 +14,11 @@ import blockchains.iaas.uni.stuttgart.de.scipcasestudy.clientapplication.backend
 import io.reactivex.disposables.Disposable;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -98,6 +101,25 @@ public class WorkflowController {
     @RequestMapping(value = "workflow/query", method = RequestMethod.GET)
     public List<LogEntry> queryState() {
         return LogsHandler.getInstance().getEntries();
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "workflow/newPrice", method = RequestMethod.POST)
+    public void triggerPriceChange(@RequestBody String newPrice) throws ExecutionException, InterruptedException {
+        InvocationRequestMessage requestMessage = InvocationRequestMessage.builder()
+                .inputs(Collections.singletonList(Parameter
+                        .builder()
+                        .name("newPrice")
+                        .type(TYPE_FABRIC_INT)
+                        .value(newPrice)
+                        .build()))
+                .outputs(Collections.emptyList())
+                .functionIdentifier("changeBulkPrice")
+                .callbackUrl(callbackUrl)
+                .correlationIdentifier(RandomStringUtils.random(10))
+                .signature("")
+                .build();
+        ScipClient.getInstance().invoke(sclEms, requestMessage).get();
     }
 
     private SubscriptionRequestMessage getSubscribeRequestMessage() {

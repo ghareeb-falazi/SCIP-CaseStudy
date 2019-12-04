@@ -14,6 +14,7 @@ export class ScipClientService {
   private getBackendUrl() {
 
   }
+
   public queryState(): Promise<EmsState> {
     const url = `${environment.apiUrl}/query`;
     return this.http.get<EmsState>(url)
@@ -36,6 +37,11 @@ export class ScipClientService {
   public getWorkflowState(): Promise<LogEntry[]> {
     const url = `${environment.apiUrl}/workflow/query`;
     return this.http.get<LogEntry[]>(url).toPromise();
+  }
+
+  public changeBulkPrice(newPrice: number): Promise<void> {
+    const url = `${environment.apiUrl}/workflow/newPrice`;
+    return this.http.post<void>(url, newPrice.toString(10)).toPromise();
   }
 
 }

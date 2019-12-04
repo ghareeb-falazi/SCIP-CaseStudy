@@ -1,20 +1,31 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ScipClientService } from './ScipClientService';
 import { EmsState } from './EmsState';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Smart Contract Invocation Protocol (SCIP) Case Study';
   ems: EmsState = null;
   querying = false;
   workflowRunning = false;
+  changingPrice = false;
   logs: string = null;
+  bulkPrice: number;
 
-  constructor(private scipService: ScipClientService) {
+  ngOnInit(): void {
+    this.changingPrice = true;
+    this.scipService.queryState().then(result => {
+      this.bulkPrice = parseInt(result.powerPlantPrice, 10);
+      this.changingPrice = false;
+    });
+  }
+
+  constructor(private scipService: ScipClientService, private snackBar: MatSnackBar) {
   }
 
   query() {
@@ -59,6 +70,17 @@ export class AppComponent {
           this.logs = builder;
         });
       });
+  }
+
+  changePrice(): void {
+    this.changingPrice = true;
+    this.scipService.changeBulkPrice(this.bulkPrice).then(() => {
+      this.snackBar.open('Price Changed!', null, { duration: 2000 });
+    })
+      .catch(error => {
+        this.snackBar.open(`Failed to change price. Reason: ${error.statusText}`, null, { duration: 5000 });
+      })
+      .finally(() => this.changingPrice = false);
   }
 
 }
