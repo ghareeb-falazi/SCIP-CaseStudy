@@ -49,31 +49,33 @@ The sample client application is described by the following figure:
 - Start the workflow demonstrated in the fiture above by clicking on the __Start Workflow__ button.
 - Then a stream of log messages from the backend of the client application is shown on the right side with a black background.
 - Wait until the _Subscribe_ request message is sent to the first Gateway and is confirmed by it.
-- Send a POST message to the address: `http://localhost:8082/blockchain-access-layer/webapi?blockchain=fabric&blockchain-id=fabric-0&address=mychannel/ems`, which corresponds to the [SCL](https://github.com/ghareeb-falazi/scl) of the energy management system smart contract gateway of the Hyperledger Fabric permissioned blockchain, with the following body:
+- Reduce the energy bulk price to below or equal 500, by either:
+   - Using the tab entitled `Power Plant Controls`, or
+   - Sending a POST message to the address: `http://localhost:8082/blockchain-access-layer/webapi?blockchain=fabric&blockchain-id=fabric-0&address=mychannel/ems`, which corresponds to the [SCL](https://github.com/ghareeb-falazi/scl) of the energy management system smart contract gateway of the Hyperledger Fabric permissioned blockchain, with the following body:
 
-  ```
-  {
-      "jsonrpc": 2.0,
-      "method": "Invoke",
-      "id": 1,
-      "params": {
-          "functionIdentifier": "changeBulkPrice",
-          "inputs": [{
-            "name": "newPrice",
-            "type": " {\"type\":\"integer\",\"minimum\": 0,\"maximum\":4294967295}",
-            "value": 500
-          } ],
-          "outputs": [],
-          "doc": 50,
-          "callbackUrl": "http://localhost:8081/webapi/submit-transaction/dummy",
-          "timeout": 100000,
-          "correlationIdentifier": "abc",
-          "signature": ""
-      }
-  }
-  ```
-  This has the effect of triggering the transaction that reduces the bulk energy price. You can use a tool like [Postman](https://www.getpostman.com/), or [curl](https://curl.haxx.se/) to achieve this task.
-- Go back to the frontend, and check how the log messages proceed according to the presercibed [workflow](https://github.com/ghareeb-falazi/SCIP-CaseStudy/blob/master/ClientApplication/scip-client-application/backend/src/main/java/blockchains/iaas/uni/stuttgart/de/scipcasestudy/clientapplication/backend/restapi/WorkflowController.java).
+     ```
+     {
+        "jsonrpc": 2.0,
+        "method": "Invoke",
+        "id": 1,
+        "params": {
+            "functionIdentifier": "changeBulkPrice",
+            "inputs": [{
+              "name": "newPrice",
+              "type": " {\"type\":\"integer\",\"minimum\": 0,\"maximum\":4294967295}",
+              "value": 500
+            } ],
+            "outputs": [],
+            "doc": 50,
+            "callbackUrl": "http://localhost:8081/webapi/submit-transaction/dummy",
+            "timeout": 100000,
+            "correlationIdentifier": "abc",
+            "signature": ""
+         }
+     }
+     ```
+     This has the effect of triggering the transaction that reduces the bulk energy price. You can use a tool like [Postman](https://www.getpostman.com/), or [curl](https://curl.haxx.se/) to achieve this task.
+- Go back to the initial tab (`Power Provider Controls`), and check how the log messages proceed according to the presercibed [workflow](https://github.com/ghareeb-falazi/SCIP-CaseStudy/blob/master/ClientApplication/scip-client-application/backend/src/main/java/blockchains/iaas/uni/stuttgart/de/scipcasestudy/clientapplication/backend/restapi/WorkflowController.java).
 - When the _Done!!!_ message is received, recheck the state of the EMS and notice how it is changed according to the workflow.
 
 ## Notes
